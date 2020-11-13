@@ -1,43 +1,98 @@
-import ImagesApiService from './fetchImages';
-import getRefs from './gets-refs'
 
+
+import getRefs from './gets-refs';
+
+
+import ImagesApiService from '../js/fetchImages';
+import card from '../templates/card.hbs';
+
+import { onOpenModal } from './modal';
+import { error } from '@pnotify/core';
+import '@pnotify/core/dist/PNotify.css';
+import '@pnotify/core/dist/BrightTheme.css';
 
 const refs = getRefs()
 
 
 
-const imagesApiService = new ImagesApiService()
+refs.searchForm.addEventListener('submit', onSearch);
+refs.loadMoreBtn.addEventListener('click', onLoadMore);
+refs.imageContainer.addEventListener('click', onOpenModal);
 
+const imagesApiService = new ImagesApiService();
 
-refs.searchForm.addEventListener('input', onSearch)
+let coord = 0
 
-
-function onSearch(event) {
+async function onSearch(event) {
   event.preventDefault();
 
   try {
-    noResultMessage.classList.add('is-hidden');
-    const inputSearchValue = event.currentTarget.elements.query.value;
-    imageApiService.query = inputSearchValue;
+    
+    const inputValue = event.currentTarget.elements.query.value;
+    imagesApiService.query = inputValue;
 
-    loadMoreBtn.classList.add('is-hidden');
+    refs.loadMoreBtn.classList.add('is-hidden');
 
-    imageApiService.resetPage();
-    clearArticlesContainer();
-    const response = await imageApiService.fetchImages();
+    imagesApiService.resetPage();
+    clearImageContainer();
+    const response = await imagesApiService.fetchImages();
 
-    if (response.length === 0) {
-      noResultMessage.classList.remove('is-hidden');
-    } else if (response.length > 0) {
-      appendArticlesMarkup(response);
-      loadMoreBtn.classList.remove('is-hidden');
+    if (imagesApiService.query ==='') {
+      Nothing()
+      clearImageContainer();
+    }
+
+    else if (imagesApiService.query) {
+      
+      appendImagesMarkup(response);
+      refs.loadMoreBtn.classList.remove('is-hidden');
     }
     if (response.length < 12) {
-      loadMoreBtn.classList.add('is-hidden');
+      refs.loadMoreBtn.classList.add('is-hidden');
     }
   } catch (error) {
     console.log('Ошибка');
   }
+}
+
+async function onLoadMore() {
+  coord = refs.imageContainer.offsetHeight;
+  try {
+    const response = await imagesApiService.fetchImages();
+    console.log(response);
+
+    appendImagesMarkup(response);
+
+    scroll()
+    
+  } catch (error) {
+    console.log('Ошибка');
+  }
+}
+
+function appendImagesMarkup(articles) {
+  refs.imageContainer.insertAdjacentHTML('beforeend', card(articles));
+}
+
+function clearImageContainer() {
+  refs.imageContainer.innerHTML = '';
+}
+
+function scroll() {
+  window.scrollTo({
+    top: coord,
+    left: 0,
+    behavior: 'smooth'
+  })
+}
+  
+function Nothing() {
+  error({
+    title: 'ПУСТОООООООО!',
+    text: 'НЕ ЛЕНИСЬ, НАПИШИ!',
+    delay: 2000,
+    
+  });
 }
 
 

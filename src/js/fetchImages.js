@@ -31,18 +31,3 @@ export default class ImagesApiService {
   }
 }
 
-// Промисы
-
-// fetchImages() {
-//   const API_KEY = '18452046-d075d28130c097165687e8e16';
-//   const BASE_URL = 'https://pixabay.com/api';
-
-//   return fetch(
-//     `${BASE_URL}/?image_type=photo&orientation=horizontal&q=${this.searchQuery}&page=${this.page}&per_page=12&key=${API_KEY}`,
-//   )
-//     .then(r => r.json())
-//     .then(data => {
-//       this.page += 1;
-//       return data.hits;
-//     });
-// }
