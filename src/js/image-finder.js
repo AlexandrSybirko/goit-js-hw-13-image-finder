@@ -13,8 +13,6 @@ import '@pnotify/core/dist/BrightTheme.css';
 
 const refs = getRefs()
 
-
-
 refs.searchForm.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 refs.imageContainer.addEventListener('click', onOpenModal);
@@ -41,7 +39,6 @@ async function onSearch(event) {
       Nothing()
       clearImageContainer();
     }
-
     else if (imagesApiService.query) {
       
       appendImagesMarkup(response);
